@@ -18,22 +18,19 @@ private void Day11_1()
 	int total = 0;
 	for (int k=1; k<=100; k++)
 	{
-		bool flashed = false;
+		List<Tuple<int, int>> flashed = new List<Tuple<int, int>>();
 		for (int i = 0; i < data.Length; i++)
 		{
 			for (int j = 0; j < data[i].Length; j++)
 			{
-				int n = Day11_Process(data, i, j);
-				if (n > 0) flashed = true;
-				total += n;
+				flashed.AddRange(Day11_Process(data, i, j));
 			}
 		}
 
-		if (!flashed) continue;
-
-		for (int i = 0; i < data.Length; i++)
+		total += flashed.Count;
+		foreach (Tuple<int, int> t in flashed)
 		{
-			data[i].Where(a => a.Flashed).ToList().ForEach(a => a.Flashed = false);
+			data[t.Item1][t.Item2].Flashed = false;
 		}
 	}
 
@@ -48,25 +45,20 @@ private void Day11_2()
 	while (true)
 	{
 		count++;
-		bool flashed = false;
+		List<Tuple <int, int>> flashed = new List<Tuple<int, int>>();
 		for (int i = 0; i < data.Length; i++)
 		{
 			for (int j = 0; j < data[i].Length; j++)
 			{
-				if (Day11_Process(data, i, j) > 0) flashed = true;
+				flashed.AddRange(Day11_Process(data, i, j));
 			}
 		}
 
-		if (flashed)
-		{
-			bool all = true;
-			for (int i = 0; i < data.Length; i++)
-			{
-				all = all && !data[i].Any(a => !a.Flashed);
-				data[i].Where(a => a.Flashed).ToList().ForEach(a => a.Flashed = false);
-			}
+		if (flashed.Count == 100) break;
 
-			if (all) break;
+		foreach (Tuple<int, int> t in flashed)
+		{
+			data[t.Item1][t.Item2].Flashed = false;
 		}
 	}
 
@@ -74,27 +66,28 @@ private void Day11_2()
 }
 
 
-private int Day11_Process(Day11_Data[][] data, int i, int j)
+private List<Tuple<int, int>> Day11_Process(Day11_Data[][] data, int i, int j)
 {
 	if ((i < 0) || (j < 0) || (i == data.Length) || (j == data[i].Length) || data[i][j].Flashed)
-		return 0;        
+		return new List<Tuple<int, int>>();        
 		
 	data[i][j].Number++;
-	if (data[i][j].Number < 10) return 0;
+	if (data[i][j].Number < 10) return new List<Tuple<int, int>>();
 
 	data[i][j].Flashed = true; // processed
 	data[i][j].Number = 0;
 
-	int result = Day11_Process(data, i, j - 1)          //left
-				 + Day11_Process(data, i - 1, j)        // top
-				 + Day11_Process(data, i, j + 1)        // right
-				 + Day11_Process(data, i + 1, j)        // bottom
-				 + Day11_Process(data, i - 1, j - 1)    // left top  
-				 + Day11_Process(data, i - 1, j + 1)    // right top
-				 + Day11_Process(data, i + 1, j - 1)    // left bottom
-				 + Day11_Process(data, i + 1, j + 1);   // right bottom
+	List<Tuple<int, int>> result = new List<Tuple<int, int>>() { new Tuple<int, int>(i, j) };
+	result.AddRange(Day11_Process(data, i, j - 1));         // left
+	result.AddRange(Day11_Process(data, i - 1, j));         // top
+	result.AddRange(Day11_Process(data, i, j + 1));         // right
+	result.AddRange(Day11_Process(data, i + 1, j));         // bottom
+	result.AddRange(Day11_Process(data, i - 1, j - 1));     // left top  
+	result.AddRange(Day11_Process(data, i - 1, j + 1));     // right top
+	result.AddRange(Day11_Process(data, i + 1, j - 1));     // left bottom
+	result.AddRange(Day11_Process(data, i + 1, j + 1));     // right bottom
 
-	return result + 1;
+	return result;
 }
 
 private Day11_Data[][] Day11_ReadData()
