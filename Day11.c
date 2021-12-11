@@ -33,7 +33,7 @@ private void Day11_1()
 
 		for (int i = 0; i < data.Length; i++)
 		{
-			data[i].Where(a => a.Flashed).ToList().ForEach(a => { a.Flashed = false; a.Number = 0; });
+			data[i].Where(a => a.Flashed).ToList().ForEach(a => a.Flashed = false);
 		}
 	}
 
@@ -63,7 +63,7 @@ private void Day11_2()
 			for (int i = 0; i < data.Length; i++)
 			{
 				all = all && !data[i].Any(a => !a.Flashed);
-				data[i].Where(a => a.Flashed).ToList().ForEach(a => { a.Flashed = false; a.Number = 0; });
+				data[i].Where(a => a.Flashed).ToList().ForEach(a => a.Flashed = false);
 			}
 
 			if (all) break;
@@ -76,11 +76,11 @@ private void Day11_2()
 
 private int Day11_Process(Day11_Data[][] data, int i, int j)
 {
-	if ((i < 0) || (j < 0) || (i == data.Length) || (j == data[i].Length))  // invalid position
+	if ((i < 0) || (j < 0) || (i == data.Length) || (j == data[i].Length) || data[i][j].Flashed)
 		return 0;        
 		
 	data[i][j].Number++;
-	if (data[i][j].Number < 10 || data[i][j].Flashed) return 0;
+	if (data[i][j].Number < 10) return 0;
 
 	data[i][j].Flashed = true; // processed
 	data[i][j].Number = 0;
