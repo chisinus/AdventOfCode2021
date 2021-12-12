@@ -77,8 +77,10 @@ private int Day12_Process2(Day12_Data point)
 
 	Day12_Path.RemoveAt(Day12_Path.Count - 1);
 	
-	if (Day12_TwicePoint == point.CaveName && point.Remain == 0) Day12_TwicePoint = "";
-	else point.ResetNumber();
+	if (Day12_TwicePoint == point.CaveName && point.Remain == 0) 
+		Day12_TwicePoint = "";
+	else 
+		point.ResetNumber();
 
 	return count;
 }
